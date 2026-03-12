@@ -1,6 +1,6 @@
 {
   "name": "lets-talk-about",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Easily create slides from Markdown. Customize your slides with HTML and CSS. Host your slides for free on GitHub Pages.",
   "type": "module",
   "bin": {
