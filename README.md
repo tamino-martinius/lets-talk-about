@@ -234,7 +234,15 @@ import { init } from 'lets-talk-about/client/slides';
 
 ## Deployment
 
-The scaffolded project includes a GitHub Actions workflow. Enable **GitHub Actions** as the source in your repo's **Settings > Pages**.
+The scaffolded project includes a GitHub Actions workflow that builds and deploys your slides to GitHub Pages.
+
+### Setup
+
+1. Push your project to GitHub
+2. Go to your repo's **Settings > Pages**
+3. Under **Build and deployment > Source**, select **GitHub Actions**
+
+The workflow triggers on pushes to the `main` branch. If your default branch has a different name, update `branches:` in `.github/workflows/deploy.yml`.
 
 ## License
 
