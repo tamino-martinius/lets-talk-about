@@ -4,7 +4,7 @@
   "description": "Easily create slides from Markdown. Customize your slides with HTML and CSS. Host your slides for free on GitHub Pages.",
   "type": "module",
   "bin": {
-    "lets-talk-about": "./bin/cli.mjs"
+    "lets-talk-about": "bin/cli.js"
   },
   "exports": {
     ".": "./src/plugin.js",
@@ -19,7 +19,7 @@
   "homepage": "https://github.com/tamino-martinius/lets-talk-about",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tamino-martinius/lets-talk-about.git"
+    "url": "git+https://github.com/tamino-martinius/lets-talk-about.git"
   },
   "keywords": [
     "slides",
