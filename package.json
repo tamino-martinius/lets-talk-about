@@ -8,7 +8,9 @@
   },
   "exports": {
     ".": "./src/plugin.js",
-    "./client/slides": "./src/client/slides.js"
+    "./compiler": "./src/compiler.js",
+    "./client/slides": "./src/client/slides.js",
+    "./client/styles.css": "./src/client/styles.css"
   },
   "files": [
     "bin/",
