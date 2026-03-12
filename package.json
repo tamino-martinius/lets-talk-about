@@ -1,0 +1,38 @@
+{
+  "name": "lets-talk-about",
+  "version": "0.1.0",
+  "description": "Easily create slides from Markdown. Customize your slides with HTML and CSS. Host your slides for free on GitHub Pages.",
+  "type": "module",
+  "bin": {
+    "lets-talk-about": "./bin/cli.mjs"
+  },
+  "exports": {
+    ".": "./src/plugin.js",
+    "./client/slides": "./src/client/slides.js"
+  },
+  "files": [
+    "bin/",
+    "src/"
+  ],
+  "author": "Tamino Martinius",
+  "license": "MIT",
+  "homepage": "https://github.com/tamino-martinius/lets-talk-about",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tamino-martinius/lets-talk-about.git"
+  },
+  "keywords": [
+    "slides",
+    "presentation",
+    "markdown",
+    "vite"
+  ],
+  "dependencies": {
+    "commander": "^14.0.3",
+    "gh-pages": "^6.3.0",
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.1",
+    "vite": "^7.3.1"
+  }
+}
