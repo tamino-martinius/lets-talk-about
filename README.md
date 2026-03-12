@@ -244,6 +244,16 @@ The scaffolded project includes a GitHub Actions workflow that builds and deploy
 
 The workflow triggers on pushes to the `main` branch. If your default branch has a different name, update `branches:` in `.github/workflows/deploy.yml`.
 
+### Custom Domain
+
+To use a custom domain, add a `CNAME` file to your project root containing the domain:
+
+```
+my-slides.example.com
+```
+
+The deploy workflow automatically detects the `CNAME` file and adjusts the base path — no manual configuration needed.
+
 ## License
 
 MIT
