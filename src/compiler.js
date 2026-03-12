@@ -89,6 +89,10 @@ md.renderer.rules.fence = function (tokens, idx) {
   const token = tokens[idx];
   const { lang, linenums, highlights } = parseFenceInfo(token.info);
 
+  if (lang === 'mermaid') {
+    return `<pre class="mermaid">${md.utils.escapeHtml(token.content)}</pre>\n`;
+  }
+
   let code;
   if (lang && hljs.getLanguage(lang)) {
     code = hljs.highlight(token.content, { language: lang }).value;

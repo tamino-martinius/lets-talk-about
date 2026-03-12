@@ -232,6 +232,27 @@ img {
   padding: 0;
 }
 
+/* Mermaid diagrams */
+.slides pre.mermaid {
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  line-height: normal;
+  white-space: normal;
+  padding: 0;
+  overflow: visible;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slides pre.mermaid svg {
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+}
+
 /* Code line wrapping */
 .slides pre .code-line {
   display: inline-block;

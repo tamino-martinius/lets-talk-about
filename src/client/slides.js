@@ -5,7 +5,7 @@
   Original authors: Luke Mahé, Marcin Wichary, Dominic Mazzoni, Charles Chen
 */
 
-const SLIDE_CLASSES = ['far-past', 'past', 'current', 'next', 'far-next'];
+const SLIDE_CLASSES = ["far-past", "past", "current", "next", "far-next"];
 const TOUCH_SENSITIVITY = 15;
 
 let slideEls = [];
@@ -46,37 +46,41 @@ function triggerEnterEvent(no) {
   const el = getSlideEl(no);
   if (!el) return;
 
-  const onEnter = el.getAttribute('onslideenter');
+  const onEnter = el.getAttribute("onslideenter");
   if (onEnter) new Function(onEnter).call(el);
 
-  el.dispatchEvent(new CustomEvent('slideenter', {
-    bubbles: true,
-    detail: { slideNumber: no + 1 },
-  }));
+  el.dispatchEvent(
+    new CustomEvent("slideenter", {
+      bubbles: true,
+      detail: { slideNumber: no + 1 },
+    }),
+  );
 }
 
 function triggerLeaveEvent(no) {
   const el = getSlideEl(no);
   if (!el) return;
 
-  const onLeave = el.getAttribute('onslideleave');
+  const onLeave = el.getAttribute("onslideleave");
   if (onLeave) new Function(onLeave).call(el);
 
-  el.dispatchEvent(new CustomEvent('slideleave', {
-    bubbles: true,
-    detail: { slideNumber: no + 1 },
-  }));
+  el.dispatchEvent(
+    new CustomEvent("slideleave", {
+      bubbles: true,
+      detail: { slideNumber: no + 1 },
+    }),
+  );
 }
 
 /* Iframe management */
 
 function disableFrame(frame) {
-  frame.src = 'about:blank';
+  frame.src = "about:blank";
 }
 
 function enableFrame(frame) {
   const src = frame._src;
-  if (frame.src !== src && src !== 'about:blank') {
+  if (frame.src !== src && src !== "about:blank") {
     frame.src = src;
   }
 }
@@ -84,7 +88,7 @@ function enableFrame(frame) {
 function disableSlideFrames(no) {
   const el = getSlideEl(no);
   if (!el) return;
-  for (const frame of el.getElementsByTagName('iframe')) {
+  for (const frame of el.getElementsByTagName("iframe")) {
     disableFrame(frame);
   }
 }
@@ -92,13 +96,13 @@ function disableSlideFrames(no) {
 function enableSlideFrames(no) {
   const el = getSlideEl(no);
   if (!el) return;
-  for (const frame of el.getElementsByTagName('iframe')) {
+  for (const frame of el.getElementsByTagName("iframe")) {
     enableFrame(frame);
   }
 }
 
 function setupFrames() {
-  for (const frame of document.querySelectorAll('iframe')) {
+  for (const frame of document.querySelectorAll("iframe")) {
     frame._src = frame.src;
     disableFrame(frame);
   }
@@ -112,12 +116,24 @@ function setupFrames() {
 function updateSlides() {
   for (let i = 0; i < slideEls.length; i++) {
     switch (i) {
-      case curSlide - 2: updateSlideClass(i, 'far-past'); break;
-      case curSlide - 1: updateSlideClass(i, 'past'); break;
-      case curSlide:     updateSlideClass(i, 'current'); break;
-      case curSlide + 1: updateSlideClass(i, 'next'); break;
-      case curSlide + 2: updateSlideClass(i, 'far-next'); break;
-      default:           updateSlideClass(i); break;
+      case curSlide - 2:
+        updateSlideClass(i, "far-past");
+        break;
+      case curSlide - 1:
+        updateSlideClass(i, "past");
+        break;
+      case curSlide:
+        updateSlideClass(i, "current");
+        break;
+      case curSlide + 1:
+        updateSlideClass(i, "next");
+        break;
+      case curSlide + 2:
+        updateSlideClass(i, "far-next");
+        break;
+      default:
+        updateSlideClass(i);
+        break;
     }
   }
 
@@ -135,29 +151,32 @@ function updateSlides() {
 /* Build system (progressive reveal) */
 
 function buildNextItem() {
-  const toBuild = slideEls[curSlide].querySelectorAll('.to-build');
+  const toBuild = slideEls[curSlide].querySelectorAll(".to-build");
   if (!toBuild.length) return false;
-  toBuild[0].classList.remove('to-build');
+  toBuild[0].classList.remove("to-build");
   return true;
 }
 
 function makeBuildLists() {
   for (let i = curSlide; i < slideEls.length; i++) {
     const slide = slideEls[i];
-    let selector = '.build > *';
-    if (slide.classList.contains('build')) {
-      selector += ':not(:first-child)';
+    let selector = ".build > *";
+    if (slide.classList.contains("build")) {
+      selector += ":not(:first-child)";
     }
     for (const item of slide.querySelectorAll(selector)) {
       // Skip layout regions — they should always be visible
-      if (item.classList.contains('layout-region')) continue;
+      if (item.classList.contains("layout-region")) continue;
       // For lists inside .build slides, mark individual items instead of the whole list
-      if (slide.classList.contains('build') && (item.tagName === 'UL' || item.tagName === 'OL')) {
+      if (
+        slide.classList.contains("build") &&
+        (item.tagName === "UL" || item.tagName === "OL")
+      ) {
         for (const li of item.children) {
-          li.classList.add('to-build');
+          li.classList.add("to-build");
         }
       } else {
-        item.classList.add('to-build');
+        item.classList.add("to-build");
       }
     }
   }
@@ -183,8 +202,8 @@ function nextSlide() {
 /* Touch events */
 
 function cancelTouch() {
-  document.body.removeEventListener('touchmove', handleTouchMove, true);
-  document.body.removeEventListener('touchend', handleTouchEnd, true);
+  document.body.removeEventListener("touchmove", handleTouchMove, true);
+  document.body.removeEventListener("touchend", handleTouchEnd, true);
 }
 
 function handleTouchStart(event) {
@@ -193,8 +212,8 @@ function handleTouchStart(event) {
     touchDY = 0;
     touchStartX = event.touches[0].pageX;
     touchStartY = event.touches[0].pageY;
-    document.body.addEventListener('touchmove', handleTouchMove, true);
-    document.body.addEventListener('touchend', handleTouchEnd, true);
+    document.body.addEventListener("touchmove", handleTouchMove, true);
+    document.body.addEventListener("touchend", handleTouchEnd, true);
   }
 }
 
@@ -225,19 +244,19 @@ function handleTouchEnd() {
 
 function handleKeyDown(event) {
   switch (event.key) {
-    case 'ArrowRight':
-    case 'Enter':
-    case ' ':
-    case 'PageDown':
-    case 'ArrowDown':
+    case "ArrowRight":
+    case "Enter":
+    case " ":
+    case "PageDown":
+    case "ArrowDown":
       nextSlide();
       event.preventDefault();
       break;
 
-    case 'ArrowLeft':
-    case 'Backspace':
-    case 'PageUp':
-    case 'ArrowUp':
+    case "ArrowLeft":
+    case "Backspace":
+    case "PageUp":
+    case "ArrowUp":
       prevSlide();
       event.preventDefault();
       break;
@@ -248,34 +267,40 @@ function handleKeyDown(event) {
 
 function setupInteraction() {
   // Click areas
-  const prevArea = document.createElement('div');
-  prevArea.className = 'slide-area';
-  prevArea.id = 'prev-slide-area';
-  prevArea.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
-  document.querySelector('section.slides').appendChild(prevArea);
+  const prevArea = document.createElement("div");
+  prevArea.className = "slide-area";
+  prevArea.id = "prev-slide-area";
+  prevArea.addEventListener("click", (e) => {
+    e.stopPropagation();
+    prevSlide();
+  });
+  document.querySelector("section.slides").appendChild(prevArea);
 
-  const nextArea = document.createElement('div');
-  nextArea.className = 'slide-area';
-  nextArea.id = 'next-slide-area';
-  nextArea.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
-  document.querySelector('section.slides').appendChild(nextArea);
+  const nextArea = document.createElement("div");
+  nextArea.className = "slide-area";
+  nextArea.id = "next-slide-area";
+  nextArea.addEventListener("click", (e) => {
+    e.stopPropagation();
+    nextSlide();
+  });
+  document.querySelector("section.slides").appendChild(nextArea);
 
   // Touch
-  document.body.addEventListener('touchstart', handleTouchStart, false);
+  document.body.addEventListener("touchstart", handleTouchStart, false);
 
   // Keyboard
-  document.addEventListener('keydown', handleKeyDown, false);
+  document.addEventListener("keydown", handleKeyDown, false);
 }
 
 /* Background images from data attributes */
 
 function processBackgrounds() {
-  for (const article of document.querySelectorAll('article[data-background]')) {
-    const bg = article.getAttribute('data-background');
+  for (const article of document.querySelectorAll("article[data-background]")) {
+    const bg = article.getAttribute("data-background");
     article.style.backgroundImage = `url('${bg}')`;
-    article.classList.add('image');
-    if (article.getAttribute('data-cover') === 'true') {
-      article.classList.add('cover');
+    article.classList.add("image");
+    if (article.getAttribute("data-cover") === "true") {
+      article.classList.add("cover");
     }
   }
 }
@@ -283,19 +308,44 @@ function processBackgrounds() {
 /* Video auto-play/pause via IntersectionObserver */
 
 function setupVideos() {
-  const observer = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.isIntersecting && entry.target.parentElement.classList.contains('current')) {
-        entry.target.play();
-      } else {
-        entry.target.pause();
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (
+          entry.isIntersecting &&
+          entry.target.parentElement.classList.contains("current")
+        ) {
+          entry.target.play();
+        } else {
+          entry.target.pause();
+        }
       }
-    }
-  }, { threshold: [0, 1.0] });
+    },
+    { threshold: [0, 1.0] },
+  );
 
-  for (const video of document.querySelectorAll('video')) {
+  for (const video of document.querySelectorAll("video")) {
     observer.observe(video);
   }
+}
+
+/* Mermaid diagrams */
+
+async function renderMermaid() {
+  const els = document.querySelectorAll("pre.mermaid");
+  if (!els.length) return;
+  const themeColor = getComputedStyle(document.documentElement)
+    .getPropertyValue("--color-theme")
+    .trim();
+  const sectionForegroundColor = getComputedStyle(document.documentElement)
+    .getPropertyValue("--color-section-foreground")
+    .trim();
+  const { default: mermaid } = await import("mermaid");
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: "neutral",
+  });
+  await mermaid.run({ nodes: els });
 }
 
 /* Hash */
@@ -310,15 +360,15 @@ function getCurSlideFromHash() {
 export function init() {
   getCurSlideFromHash();
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', handleDomLoaded);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", handleDomLoaded);
   } else {
     handleDomLoaded();
   }
 }
 
 function handleDomLoaded() {
-  slideEls = document.querySelectorAll('section.slides > article');
+  slideEls = document.querySelectorAll("section.slides > article");
 
   processBackgrounds();
   setupFrames();
@@ -327,6 +377,7 @@ function handleDomLoaded() {
   updateSlides();
   makeBuildLists();
   setupVideos();
+  renderMermaid();
 
-  document.body.classList.add('loaded');
+  document.body.classList.add("loaded");
 }
