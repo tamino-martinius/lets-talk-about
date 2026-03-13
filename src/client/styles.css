@@ -1,6 +1,12 @@
 /* lets-talk-about default styles */
 /* Theme variables are injected via <style> in the generated HTML by the compiler */
 
+/* Viewport scale variables - default to actual viewport units */
+:root {
+  --vw: 1vw;
+  --vh: 1vh;
+}
+
 /* Reset */
 html,
 body,
@@ -11,6 +17,10 @@ article::after {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+}
+
+html, body {
+  overflow: hidden;
 }
 
 body {
@@ -33,8 +43,8 @@ body {
 
 /* Click areas */
 .slide-area {
-  height: 100vh;
-  width: 10vw;
+  height: calc(100 * var(--vh));
+  width: calc(10 * var(--vw));
   position: absolute;
 }
 
@@ -58,6 +68,8 @@ body {
 article {
   vertical-align: middle;
   display: none;
+  color: var(--color-foreground);
+  background-color: var(--color-background);
 }
 
 article.current {
@@ -84,7 +96,7 @@ article::before {
 article::after {
   z-index: -1;
   opacity: 0.95;
-  background-image: radial-gradient(75vw, var(--color-background) 0%, var(--color-background) 75%, var(--color-vignette) 100%);
+  background-image: radial-gradient(calc(75 * var(--vw)), var(--color-background) 0%, var(--color-background) 75%, var(--color-vignette) 100%);
 }
 
 /* Plain slides */
@@ -94,8 +106,8 @@ article.plain::after {
 }
 
 /* Section slides */
-article.section::after {
-  background-image: radial-gradient(75vw, var(--color-theme) 0%, var(--color-theme) 50%, var(--color-vignette) 100%);
+article.section {
+  background-image: radial-gradient(calc(75 * var(--vw)), var(--color-theme) 0%, var(--color-theme) 50%, var(--color-vignette) 100%);
 }
 
 article.section h1,
@@ -133,6 +145,11 @@ article.image > *:not(:only-child,.layout-region):last-child {
   bottom: 0;
 }
 
+/* Presenter notes — hidden in viewer mode */
+.presenter-notes {
+  display: none;
+}
+
 /* Build animations */
 .build > *,
 .build > ul > li,
@@ -149,7 +166,7 @@ h1, h2, h3, h4, h5, h6 {
   text-align: center;
   color: var(--color-theme);
   text-shadow: 0 0 1px #000;
-  margin: 1vh;
+  margin: calc(1 * var(--vh));
 }
 
 em,
@@ -159,23 +176,23 @@ a:hover {
   color: var(--color-theme);
 }
 
-h1 { font-size: 10vw; }
-h2 { font-size: 5vw; }
-h3 { font-size: 2.5vw; }
+h1 { font-size: calc(10 * var(--vw)); }
+h2 { font-size: calc(5 * var(--vw)); }
+h3 { font-size: calc(2.5 * var(--vw)); }
 
 ul {
   list-style: none;
-  font-size: 3vw;
+  font-size: calc(3 * var(--vw));
   line-height: 2em;
-  padding-left: 10vw;
+  padding-left: calc(10 * var(--vw));
 }
 
 video,
 img {
   width: auto;
   height: auto;
-  max-width: 80vw;
-  max-height: 80vh;
+  max-width: calc(80 * var(--vw));
+  max-height: calc(80 * var(--vh));
   display: block;
   margin: 0 auto;
 }
@@ -185,17 +202,17 @@ img {
   background-color: #000;
   border-radius: 8px;
   width: 90%;
-  font-size: 3vw;
+  font-size: calc(3 * var(--vw));
   margin: 0 auto;
-  padding: 1vw 2vw;
+  padding: calc(1 * var(--vw)) calc(2 * var(--vw));
   white-space: pre-wrap;
-  line-height: 3.5vw;
+  line-height: calc(3.5 * var(--vw));
   color: #fff;
   overflow-x: auto;
 }
 
 .slides pre.compact {
-  line-height: 3vw;
+  line-height: calc(3 * var(--vw));
 }
 
 /* highlight.js token colors — sunburst inspired */
@@ -250,7 +267,7 @@ img {
 .slides pre.mermaid svg {
   width: 100%;
   height: auto;
-  max-height: 70vh;
+  max-height: calc(70 * var(--vh));
 }
 
 /* Code line wrapping */
@@ -281,8 +298,8 @@ img {
 /* Line highlighting */
 .slides pre .code-line.highlight {
   background-color: color-mix(in srgb, var(--color-theme) 20%, transparent);
-  margin: 0 -2vw;
-  padding: 0 2vw;
+  margin: 0 calc(-2 * var(--vw));
+  padding: 0 calc(2 * var(--vw));
 }
 
 /* Layout regions */
@@ -290,20 +307,20 @@ img {
   position: absolute;
   z-index: 10;
   pointer-events: none;
-  font-size: 1.5vw;
+  font-size: calc(1.5 * var(--vw));
   color: var(--color-foreground);
 }
 
 .layout-header {
-  top: 1vh;
-  left: 2vw;
-  right: 2vw;
+  top: calc(1 * var(--vh));
+  left: calc(2 * var(--vw));
+  right: calc(2 * var(--vw));
   text-align: left;
 }
 
 .layout-footer {
-  bottom: 1vh;
-  right: 2vw;
+  bottom: calc(1 * var(--vh));
+  right: calc(2 * var(--vw));
   text-align: right;
   width: fit-content;
 }
@@ -312,7 +329,7 @@ img {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-30deg);
-  font-size: 15vw;
+  font-size: calc(15 * var(--vw));
   opacity: 0.06;
   white-space: nowrap;
 }
@@ -325,9 +342,9 @@ article.section .layout-region {
 .template-two-column {
   display: flex;
   flex-direction: row;
-  gap: 2vw;
+  gap: calc(2 * var(--vw));
   width: 100%;
-  padding: 0 2vw;
+  padding: 0 calc(2 * var(--vw));
   box-sizing: border-box;
 }
 
@@ -347,8 +364,8 @@ article.section .layout-region {
 .template-title-area {
   height: auto;
   border-bottom: 2px solid var(--color-theme);
-  padding-bottom: 1vh;
-  margin-bottom: 2vh;
+  padding-bottom: calc(1 * var(--vh));
+  margin-bottom: calc(2 * var(--vh));
 }
 
 .template-content-area {
@@ -373,9 +390,9 @@ ul.horizontal ul {
 }
 
 ul.horizontal li {
-  padding: 1vw;
+  padding: calc(1 * var(--vw));
   width: 100%;
   text-align: center;
-  font-size: 7.5vh;
+  font-size: calc(7.5 * var(--vh));
   line-height: 1.5em;
 }

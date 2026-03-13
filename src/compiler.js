@@ -5,6 +5,21 @@ import { builtinTemplates } from './templates.js';
 
 const SLIDE_KEYS = new Set(['type', 'build', 'background', 'cover', 'class', 'template']);
 
+function extractSlideNotes(segment) {
+  const lines = segment.split('\n');
+  let inFence = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].trimStart().startsWith('```')) inFence = !inFence;
+    if (!inFence && lines[i].trim() === '???') {
+      return {
+        content: lines.slice(0, i).join('\n'),
+        notes: lines.slice(i + 1).join('\n').trim(),
+      };
+    }
+  }
+  return { content: segment, notes: '' };
+}
+
 function parseFenceInfo(info) {
   const tokens = info.trim().split(/\s+/);
   let lang = '';
@@ -205,7 +220,7 @@ function applyLayout(innerHtml, slideIndex, totalSlides, config) {
   return innerHtml + layoutHtml;
 }
 
-function renderSlide(content, options, slideIndex, totalSlides, config) {
+function renderSlide(content, options, slideIndex, totalSlides, config, notes) {
   const classes = [''];
   if (options.type === 'section') classes.push('section');
   if (options.build) classes.push('build');
@@ -236,7 +251,14 @@ function renderSlide(content, options, slideIndex, totalSlides, config) {
   // Apply layout
   html = applyLayout(html, slideIndex, totalSlides, config);
 
-  return `      <article${classAttr}${extraAttrs}>\n        ${html}\n      </article>`;
+  // Presenter notes
+  let notesHtml = '';
+  if (notes) {
+    const renderedNotes = md.render(notes).trim();
+    notesHtml = `\n        <aside class="presenter-notes">${renderedNotes}</aside>`;
+  }
+
+  return `      <article${classAttr}${extraAttrs}>\n        ${html}${notesHtml}\n      </article>`;
 }
 
 export function compile(source, config = {}) {
@@ -254,18 +276,22 @@ export function compile(source, config = {}) {
     const trimmed = segment.trim();
     if (!trimmed) continue;
 
-    const opts = isSlideOptions(trimmed);
+    // Extract presenter notes before processing options
+    const { content: withoutNotes, notes } = extractSlideNotes(trimmed);
+    const cleanTrimmed = withoutNotes.trim();
+
+    const opts = isSlideOptions(cleanTrimmed);
     if (opts) {
       // Pure options block (backward compat)
       pendingOptions = opts;
     } else {
       // Try extracting inline options from top of segment
-      const inline = extractInlineOptions(trimmed);
+      const inline = extractInlineOptions(cleanTrimmed);
       if (inline) {
         const mergedOptions = { ...pendingOptions, ...inline.options };
-        slideData.push({ content: inline.content, options: mergedOptions });
+        slideData.push({ content: inline.content, options: mergedOptions, notes });
       } else {
-        slideData.push({ content: trimmed, options: pendingOptions });
+        slideData.push({ content: cleanTrimmed, options: pendingOptions, notes });
       }
       pendingOptions = {};
     }
@@ -275,7 +301,7 @@ export function compile(source, config = {}) {
 
   // Second pass: render slides with templates and layout
   const slides = slideData.map((slide, index) =>
-    renderSlide(slide.content, slide.options, index, totalSlides, config)
+    renderSlide(slide.content, slide.options, index, totalSlides, config, slide.notes)
   );
 
   return { title, slides };

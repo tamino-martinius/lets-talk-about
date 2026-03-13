@@ -34,7 +34,8 @@ export default function letsTalkAbout(userOpts = {}) {
 
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        if (req.url !== '/' && req.url !== '/index.html') {
+        const pathname = req.url.split('?')[0].split('#')[0];
+        if (pathname !== '/' && pathname !== '/index.html') {
           return next();
         }
 

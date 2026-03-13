@@ -10,7 +10,9 @@
     ".": "./src/plugin.js",
     "./compiler": "./src/compiler.js",
     "./client/slides": "./src/client/slides.js",
-    "./client/styles.css": "./src/client/styles.css"
+    "./client/sync": "./src/client/sync.js",
+    "./client/styles.css": "./src/client/styles.css",
+    "./client/presenter.css": "./src/client/presenter.css"
   },
   "files": [
     "bin/",

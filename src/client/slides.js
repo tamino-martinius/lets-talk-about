@@ -5,6 +5,8 @@
   Original authors: Luke Mahé, Marcin Wichary, Dominic Mazzoni, Charles Chen
 */
 
+import { initSync, broadcastState, requestState, destroySync } from './sync.js';
+
 const SLIDE_CLASSES = ["far-past", "past", "current", "next", "far-next"];
 const TOUCH_SENSITIVITY = 15;
 
@@ -15,6 +17,12 @@ let touchStartX = 0;
 let touchStartY = 0;
 let touchDX = 0;
 let touchDY = 0;
+
+/* Build step tracking */
+let buildItemsPerSlide = []; // [slideIndex] = [el1, el2, ...]
+let currentBuildStep = 0;
+let syncEnabled = false;
+let furthestSlideReached = 0; // Track the furthest slide we've visited
 
 /* Slide movement */
 
@@ -39,7 +47,7 @@ function updateSlideClass(slideNo, className) {
 }
 
 function updateHash() {
-  location.replace(`#${curSlide + 1}`);
+  history.replaceState(null, '', location.pathname + location.search + '#' + (curSlide + 1));
 }
 
 function triggerEnterEvent(no) {
@@ -137,6 +145,17 @@ function updateSlides() {
     }
   }
 
+  // If returning to a previously visited slide, show all build items
+  if (curSlide < furthestSlideReached) {
+    const items = buildItemsPerSlide[curSlide];
+    if (items) {
+      for (const item of items) {
+        item.classList.remove("to-build");
+      }
+      currentBuildStep = items.length;
+    }
+  }
+
   triggerLeaveEvent(curSlide - 1);
   triggerEnterEvent(curSlide);
 
@@ -150,14 +169,33 @@ function updateSlides() {
 
 /* Build system (progressive reveal) */
 
+function setBuildStep(slideIndex, step) {
+  const items = buildItemsPerSlide[slideIndex];
+  if (!items) return;
+  for (let i = 0; i < items.length; i++) {
+    if (i < step) {
+      items[i].classList.remove("to-build");
+    } else {
+      items[i].classList.add("to-build");
+    }
+  }
+  currentBuildStep = step;
+}
+
 function buildNextItem() {
-  const toBuild = slideEls[curSlide].querySelectorAll(".to-build");
-  if (!toBuild.length) return false;
-  toBuild[0].classList.remove("to-build");
+  const items = buildItemsPerSlide[curSlide];
+  if (!items || currentBuildStep >= items.length) return false;
+  items[currentBuildStep].classList.remove("to-build");
+  currentBuildStep++;
   return true;
 }
 
 function makeBuildLists() {
+  buildItemsPerSlide = new Array(slideEls.length);
+  for (let i = 0; i < slideEls.length; i++) {
+    buildItemsPerSlide[i] = [];
+  }
+
   for (let i = curSlide; i < slideEls.length; i++) {
     const slide = slideEls[i];
     let selector = ".build > *";
@@ -167,6 +205,8 @@ function makeBuildLists() {
     for (const item of slide.querySelectorAll(selector)) {
       // Skip layout regions — they should always be visible
       if (item.classList.contains("layout-region")) continue;
+      // Skip presenter notes
+      if (item.classList.contains("presenter-notes")) continue;
       // For lists inside .build slides, mark individual items instead of the whole list
       if (
         slide.classList.contains("build") &&
@@ -174,9 +214,11 @@ function makeBuildLists() {
       ) {
         for (const li of item.children) {
           li.classList.add("to-build");
+          buildItemsPerSlide[i].push(li);
         }
       } else {
         item.classList.add("to-build");
+        buildItemsPerSlide[i].push(item);
       }
     }
   }
@@ -187,15 +229,26 @@ function makeBuildLists() {
 function prevSlide() {
   if (curSlide > 0) {
     curSlide--;
+    currentBuildStep = 0;
     updateSlides();
+    if (syncEnabled) broadcastState(curSlide, currentBuildStep);
   }
 }
 
 function nextSlide() {
-  if (buildNextItem()) return;
+  if (buildNextItem()) {
+    if (syncEnabled) broadcastState(curSlide, currentBuildStep);
+    return;
+  }
   if (curSlide < slideEls.length - 1) {
     curSlide++;
+    currentBuildStep = 0;
+    // Track the furthest slide we've reached
+    if (curSlide > furthestSlideReached) {
+      furthestSlideReached = curSlide;
+    }
     updateSlides();
+    if (syncEnabled) broadcastState(curSlide, currentBuildStep);
   }
 }
 
@@ -260,7 +313,43 @@ function handleKeyDown(event) {
       prevSlide();
       event.preventDefault();
       break;
+
+    case "p":
+    case "P":
+      openPresenterMode();
+      event.preventDefault();
+      break;
   }
+}
+
+/* Presenter mode launcher */
+
+function openPresenterMode() {
+  // Don't open presenter mode if already in presenter or viewer mode
+  const currentMode = new URLSearchParams(location.search).get('mode');
+  if (currentMode) return;
+
+  const base = location.pathname;
+  const hash = `#${curSlide + 1}`;
+  const viewerUrl = base + '?mode=viewer' + hash;
+  const presenterUrl = base + '?mode=presenter' + hash;
+
+  // Open viewer in a new window
+  window.open(viewerUrl, 'lta-viewer');
+  // Navigate current window to presenter
+  location.href = presenterUrl;
+}
+
+/* Sync handler */
+
+function handleSync(slide, buildStep) {
+  curSlide = Math.max(0, Math.min(slide, slideEls.length - 1));
+  updateSlides();
+  setBuildStep(curSlide, buildStep);
+}
+
+function handleSyncRequestState() {
+  broadcastState(curSlide, currentBuildStep);
 }
 
 /* Interaction setup */
@@ -360,6 +449,15 @@ function getCurSlideFromHash() {
 export function init() {
   getCurSlideFromHash();
 
+  // Activate sync for presenter/viewer modes
+  const mode = new URLSearchParams(location.search).get('mode');
+  if (mode === 'viewer' || mode === 'presenter') {
+    syncEnabled = true;
+    initSync(handleSync);
+    window.addEventListener('sync-request-state', handleSyncRequestState);
+    requestState();
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", handleDomLoaded);
   } else {
@@ -369,6 +467,9 @@ export function init() {
 
 function handleDomLoaded() {
   slideEls = document.querySelectorAll("section.slides > article");
+
+  // Initialize furthest slide to current slide (in case we start from a hash)
+  furthestSlideReached = curSlide;
 
   processBackgrounds();
   setupFrames();
