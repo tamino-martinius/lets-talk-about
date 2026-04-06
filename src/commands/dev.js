@@ -1,7 +1,7 @@
-import { createServer } from 'vite';
 import { resolve } from 'node:path';
-import letsTalkAbout from '../plugin.js';
+import { createServer } from 'vite';
 import { loadConfig } from '../config.js';
+import letsTalkAbout from '../plugin.js';
 
 export async function dev(opts) {
   const root = process.cwd();

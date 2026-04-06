@@ -1,5 +1,5 @@
-import { mkdirSync, copyFileSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { resolve, dirname, join } from 'node:path';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -34,10 +34,7 @@ export async function init(name) {
 
   // Process package.json template
   const pkgTemplate = readFileSync(join(scaffoldDir, 'package.json.tmpl'), 'utf-8');
-  writeFileSync(
-    join(targetDir, 'package.json'),
-    pkgTemplate.replace(/\{\{name\}\}/g, projectName),
-  );
+  writeFileSync(join(targetDir, 'package.json'), pkgTemplate.replace(/\{\{name\}\}/g, projectName));
 
   // Copy gitignore
   copyFileSync(join(scaffoldDir, 'gitignore'), join(targetDir, '.gitignore'));

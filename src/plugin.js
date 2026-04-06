@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildHTML } from './compiler.js';
 import { loadConfig } from './config.js';
@@ -69,7 +69,7 @@ export default function letsTalkAbout(userOpts = {}) {
 
     transformIndexHtml: {
       order: 'pre',
-      handler(html, ctx) {
+      handler(_html, ctx) {
         // For production build, replace the placeholder index.html
         if (ctx.server) return; // skip in dev — handled by middleware
 

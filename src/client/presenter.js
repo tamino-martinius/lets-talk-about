@@ -4,15 +4,15 @@
   Syncs with viewer windows via BroadcastChannel.
 */
 
-import { initSync, broadcastState, requestState } from "./sync.js";
+import { broadcastState, initSync, requestState } from './sync.js';
 
-const SLIDE_CLASSES = ["far-past", "past", "current", "next", "far-next"];
+const SLIDE_CLASSES = ['far-past', 'past', 'current', 'next', 'far-next'];
 
 let articles = [];
 let curSlide = 0;
 let currentBuildStep = 0;
 let buildItemsPerSlide = [];
-let timerInterval = null;
+let _timerInterval = null;
 let startTime = Date.now();
 let furthestSlideReached = 0;
 
@@ -35,19 +35,19 @@ function applySlideClasses(els, active) {
     for (const cls of SLIDE_CLASSES) els[i].classList.remove(cls);
     switch (i - active) {
       case -2:
-        els[i].classList.add("far-past");
+        els[i].classList.add('far-past');
         break;
       case -1:
-        els[i].classList.add("past");
+        els[i].classList.add('past');
         break;
       case 0:
-        els[i].classList.add("current");
+        els[i].classList.add('current');
         break;
       case 1:
-        els[i].classList.add("next");
+        els[i].classList.add('next');
         break;
       case 2:
-        els[i].classList.add("far-next");
+        els[i].classList.add('far-next');
         break;
     }
   }
@@ -56,14 +56,12 @@ function applySlideClasses(els, active) {
 /* Process background images */
 
 function processBackgrounds(container) {
-  for (const article of container.querySelectorAll(
-    "article[data-background]",
-  )) {
-    const bg = article.getAttribute("data-background");
+  for (const article of container.querySelectorAll('article[data-background]')) {
+    const bg = article.getAttribute('data-background');
     article.style.backgroundImage = `url('${bg}')`;
-    article.classList.add("image");
-    if (article.getAttribute("data-cover") === "true") {
-      article.classList.add("cover");
+    article.classList.add('image');
+    if (article.getAttribute('data-cover') === 'true') {
+      article.classList.add('cover');
     }
   }
 }
@@ -86,23 +84,20 @@ function collectBuildItems() {
   for (let i = 0; i < articles.length; i++) {
     buildItemsPerSlide[i] = [];
     const slide = articles[i];
-    let selector = ".build > *";
-    if (slide.classList.contains("build")) {
-      selector += ":not(:first-child)";
+    let selector = '.build > *';
+    if (slide.classList.contains('build')) {
+      selector += ':not(:first-child)';
     }
     for (const item of slide.querySelectorAll(selector)) {
-      if (item.classList.contains("layout-region")) continue;
-      if (item.classList.contains("presenter-notes")) continue;
-      if (
-        slide.classList.contains("build") &&
-        (item.tagName === "UL" || item.tagName === "OL")
-      ) {
+      if (item.classList.contains('layout-region')) continue;
+      if (item.classList.contains('presenter-notes')) continue;
+      if (slide.classList.contains('build') && (item.tagName === 'UL' || item.tagName === 'OL')) {
         for (const li of item.children) {
-          li.classList.add("to-build");
+          li.classList.add('to-build');
           buildItemsPerSlide[i].push(li);
         }
       } else {
-        item.classList.add("to-build");
+        item.classList.add('to-build');
         buildItemsPerSlide[i].push(item);
       }
     }
@@ -114,9 +109,9 @@ function setBuildStep(slideIndex, step) {
   if (!items) return;
   for (let i = 0; i < items.length; i++) {
     if (i < step) {
-      items[i].classList.remove("to-build");
+      items[i].classList.remove('to-build');
     } else {
-      items[i].classList.add("to-build");
+      items[i].classList.add('to-build');
     }
   }
   currentBuildStep = step;
@@ -125,7 +120,7 @@ function setBuildStep(slideIndex, step) {
 function buildNextItem() {
   const items = buildItemsPerSlide[curSlide];
   if (!items || currentBuildStep >= items.length) return false;
-  items[currentBuildStep].classList.remove("to-build");
+  items[currentBuildStep].classList.remove('to-build');
   currentBuildStep++;
   return true;
 }
@@ -146,7 +141,7 @@ function updateDisplay() {
     const items = buildItemsPerSlide[curSlide];
     if (items) {
       for (const item of items) {
-        item.classList.remove("to-build");
+        item.classList.remove('to-build');
       }
       currentBuildStep = items.length;
     }
@@ -154,8 +149,8 @@ function updateDisplay() {
 
   // Update notes
   if (notesPanel) {
-    const aside = articles[curSlide]?.querySelector(".presenter-notes");
-    notesPanel.innerHTML = aside ? aside.innerHTML : "";
+    const aside = articles[curSlide]?.querySelector('.presenter-notes');
+    notesPanel.innerHTML = aside ? aside.innerHTML : '';
   }
 
   // Update slide counter
@@ -163,11 +158,7 @@ function updateDisplay() {
     slideCounter.textContent = `${curSlide + 1} / ${articles.length}`;
   }
 
-  history.replaceState(
-    null,
-    "",
-    location.pathname + location.search + "#" + (curSlide + 1),
-  );
+  history.replaceState(null, '', `${location.pathname + location.search}#${curSlide + 1}`);
 }
 
 /* Navigation */
@@ -217,7 +208,7 @@ function formatTime(ms) {
   const h = Math.floor(totalSecs / 3600);
   const m = Math.floor((totalSecs % 3600) / 60);
   const s = totalSecs % 60;
-  const pad = (n) => String(n).padStart(2, "0");
+  const pad = (n) => String(n).padStart(2, '0');
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
@@ -230,11 +221,11 @@ function updateTimer() {
 /* Open viewer window */
 
 function openViewer() {
-  const base = location.pathname.replace(/\/?$/, "/");
-  const url = base.replace(/\/$/, "") + "?mode=viewer#" + (curSlide + 1);
-  const win = window.open(url, "_blank");
+  const base = location.pathname.replace(/\/?$/, '/');
+  const url = `${base.replace(/\/$/, '')}?mode=viewer#${curSlide + 1}`;
+  const win = window.open(url, '_blank');
   if (!win) {
-    alert("Popup blocked. Please allow popups for this site.");
+    alert('Popup blocked. Please allow popups for this site.');
   }
 }
 
@@ -242,18 +233,18 @@ function openViewer() {
 
 function handleKeyDown(event) {
   switch (event.key) {
-    case "ArrowRight":
-    case "Enter":
-    case " ":
-    case "PageDown":
-    case "ArrowDown":
+    case 'ArrowRight':
+    case 'Enter':
+    case ' ':
+    case 'PageDown':
+    case 'ArrowDown':
       nextSlide();
       event.preventDefault();
       break;
-    case "ArrowLeft":
-    case "Backspace":
-    case "PageUp":
-    case "ArrowUp":
+    case 'ArrowLeft':
+    case 'Backspace':
+    case 'PageUp':
+    case 'ArrowUp':
       prevSlide();
       event.preventDefault();
       break;
@@ -266,14 +257,14 @@ let mermaidModule = null;
 const renderedMermaidElements = new WeakSet();
 
 async function setupMermaidLazyLoading(container) {
-  const els = container.querySelectorAll("pre.mermaid");
+  const els = container.querySelectorAll('pre.mermaid');
   if (!els.length) return;
 
   // Import mermaid module once if not already loaded
   if (!mermaidModule) {
-    const { default: mermaid } = await import("mermaid");
+    const { default: mermaid } = await import('mermaid');
     mermaidModule = mermaid;
-    mermaid.initialize({ startOnLoad: false, theme: "neutral" });
+    mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
   }
 
   // Create IntersectionObserver to render diagrams when they become visible
@@ -287,7 +278,7 @@ async function setupMermaidLazyLoading(container) {
           try {
             await mermaidModule.run({ nodes: [entry.target] });
           } catch (error) {
-            console.error("Failed to render mermaid diagram:", error);
+            console.error('Failed to render mermaid diagram:', error);
           }
 
           // Stop observing this element after successful render
@@ -298,7 +289,7 @@ async function setupMermaidLazyLoading(container) {
     {
       threshold: 0.1,
       // Expand root margin to pre-render adjacent slides
-      rootMargin: "100% 0px 100% 0px",
+      rootMargin: '100% 0px 100% 0px',
     },
   );
 
@@ -311,32 +302,32 @@ async function setupMermaidLazyLoading(container) {
 /* Initialization */
 
 export function initPresenter() {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setup);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
   } else {
     setup();
   }
 }
 
 function setup() {
-  const slidesSection = document.querySelector("section.slides");
+  const slidesSection = document.querySelector('section.slides');
   if (!slidesSection) return;
 
   // Override viewport for presenter mode (slides use width=1100,height=750)
   const viewport = document.querySelector('meta[name="viewport"]');
   if (viewport) {
-    viewport.setAttribute("content", "width=device-width, initial-scale=1");
+    viewport.setAttribute('content', 'width=device-width, initial-scale=1');
   }
 
   // Get slide number from hash
-  const slideNo = parseInt(location.hash.substr(1));
+  const slideNo = parseInt(location.hash.substr(1), 10);
   curSlide = slideNo ? slideNo - 1 : 0;
 
   // Initialize furthest slide to current slide (in case we start from a hash)
   furthestSlideReached = curSlide;
 
   // Collect articles from original DOM
-  articles = Array.from(slidesSection.querySelectorAll("article"));
+  articles = Array.from(slidesSection.querySelectorAll('article'));
   if (!articles.length) return;
 
   // Process backgrounds on original articles
@@ -344,48 +335,48 @@ function setup() {
 
   // Clone articles for next-slide preview
   const nextSectionEl = slidesSection.cloneNode(true);
-  nextArticles = Array.from(nextSectionEl.querySelectorAll("article"));
+  nextArticles = Array.from(nextSectionEl.querySelectorAll('article'));
 
   // Build the presenter layout
-  document.body.innerHTML = "";
-  document.body.classList.add("presenter-mode");
+  document.body.innerHTML = '';
+  document.body.classList.add('presenter-mode');
 
-  const layout = document.createElement("div");
-  layout.className = "presenter-layout";
+  const layout = document.createElement('div');
+  layout.className = 'presenter-layout';
 
   // Slide panes row
-  const slidesRow = document.createElement("div");
-  slidesRow.className = "presenter-slides";
+  const slidesRow = document.createElement('div');
+  slidesRow.className = 'presenter-slides';
 
   // Current slide pane
-  currentPane = document.createElement("div");
-  currentPane.className = "presenter-pane";
-  const currentLabel = document.createElement("div");
-  currentLabel.className = "presenter-pane-label";
-  currentLabel.textContent = "Current";
-  const currentInner = document.createElement("div");
-  currentInner.className = "presenter-pane-inner";
-  currentWrapper = document.createElement("div");
-  currentWrapper.className = "presenter-slide-wrapper";
+  currentPane = document.createElement('div');
+  currentPane.className = 'presenter-pane';
+  const currentLabel = document.createElement('div');
+  currentLabel.className = 'presenter-pane-label';
+  currentLabel.textContent = 'Current';
+  const currentInner = document.createElement('div');
+  currentInner.className = 'presenter-pane-inner';
+  currentWrapper = document.createElement('div');
+  currentWrapper.className = 'presenter-slide-wrapper';
   currentSection = slidesSection;
-  currentSection.className = "slides layout-regular template-default";
+  currentSection.className = 'slides layout-regular template-default';
   currentWrapper.appendChild(currentSection);
   currentInner.appendChild(currentWrapper);
   currentPane.appendChild(currentLabel);
   currentPane.appendChild(currentInner);
 
   // Next slide pane
-  nextPane = document.createElement("div");
-  nextPane.className = "presenter-pane presenter-next";
-  const nextLabel = document.createElement("div");
-  nextLabel.className = "presenter-pane-label";
-  nextLabel.textContent = "Next";
-  const nextInner = document.createElement("div");
-  nextInner.className = "presenter-pane-inner";
-  nextWrapper = document.createElement("div");
-  nextWrapper.className = "presenter-slide-wrapper";
+  nextPane = document.createElement('div');
+  nextPane.className = 'presenter-pane presenter-next';
+  const nextLabel = document.createElement('div');
+  nextLabel.className = 'presenter-pane-label';
+  nextLabel.textContent = 'Next';
+  const nextInner = document.createElement('div');
+  nextInner.className = 'presenter-pane-inner';
+  nextWrapper = document.createElement('div');
+  nextWrapper.className = 'presenter-slide-wrapper';
   nextSection = nextSectionEl;
-  nextSection.className = "slides layout-regular template-default";
+  nextSection.className = 'slides layout-regular template-default';
   nextWrapper.appendChild(nextSection);
   nextInner.appendChild(nextWrapper);
   nextPane.appendChild(nextLabel);
@@ -395,32 +386,32 @@ function setup() {
   slidesRow.appendChild(nextPane);
 
   // Notes panel
-  notesPanel = document.createElement("div");
-  notesPanel.className = "presenter-notes-panel";
+  notesPanel = document.createElement('div');
+  notesPanel.className = 'presenter-notes-panel';
 
   // Controls bar
-  const controls = document.createElement("div");
-  controls.className = "presenter-controls";
+  const controls = document.createElement('div');
+  controls.className = 'presenter-controls';
 
-  const prevBtn = document.createElement("button");
-  prevBtn.textContent = "\u25C0 Prev";
-  prevBtn.addEventListener("click", prevSlide);
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '\u25C0 Prev';
+  prevBtn.addEventListener('click', prevSlide);
 
-  slideCounter = document.createElement("span");
-  slideCounter.className = "presenter-slide-counter";
+  slideCounter = document.createElement('span');
+  slideCounter.className = 'presenter-slide-counter';
 
-  const nextBtn = document.createElement("button");
-  nextBtn.textContent = "Next \u25B6";
-  nextBtn.addEventListener("click", nextSlide);
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = 'Next \u25B6';
+  nextBtn.addEventListener('click', nextSlide);
 
-  timerEl = document.createElement("span");
-  timerEl.className = "presenter-timer";
-  timerEl.textContent = "00:00:00";
+  timerEl = document.createElement('span');
+  timerEl.className = 'presenter-timer';
+  timerEl.textContent = '00:00:00';
 
-  const viewerBtn = document.createElement("button");
-  viewerBtn.className = "presenter-add-viewer";
-  viewerBtn.textContent = "+ Viewer";
-  viewerBtn.addEventListener("click", openViewer);
+  const viewerBtn = document.createElement('button');
+  viewerBtn.className = 'presenter-add-viewer';
+  viewerBtn.textContent = '+ Viewer';
+  viewerBtn.addEventListener('click', openViewer);
 
   controls.appendChild(prevBtn);
   controls.appendChild(slideCounter);
@@ -452,19 +443,19 @@ function setup() {
 
   // Timer
   startTime = Date.now();
-  timerInterval = setInterval(updateTimer, 1000);
+  _timerInterval = setInterval(updateTimer, 1000);
 
   // Keyboard
-  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener('keydown', handleKeyDown);
 
   // Sync
   initSync(handleSync);
-  window.addEventListener("sync-request-state", handleSyncRequestState);
+  window.addEventListener('sync-request-state', handleSyncRequestState);
   requestState();
 
   // Mermaid
   setupMermaidLazyLoading(currentSection);
   setupMermaidLazyLoading(nextSection);
 
-  document.body.classList.add("loaded");
+  document.body.classList.add('loaded');
 }

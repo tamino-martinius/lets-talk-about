@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
 const defaults = {
   slides: 'slides.md',
   styles: null,
+  base: '/',
   theme: {},
   layout: {},
   templates: {},

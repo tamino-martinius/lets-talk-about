@@ -1,8 +1,8 @@
-import { build as viteBuild } from 'vite';
-import { resolve } from 'node:path';
 import { writeFileSync } from 'node:fs';
-import letsTalkAbout from '../plugin.js';
+import { resolve } from 'node:path';
+import { build as viteBuild } from 'vite';
 import { loadConfig } from '../config.js';
+import letsTalkAbout from '../plugin.js';
 
 export async function build(opts) {
   const root = process.cwd();
@@ -27,6 +27,8 @@ export async function build(opts) {
   } finally {
     // Clean up placeholder
     const { unlinkSync } = await import('node:fs');
-    try { unlinkSync(indexPath); } catch {}
+    try {
+      unlinkSync(indexPath);
+    } catch {}
   }
 }

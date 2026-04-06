@@ -9,7 +9,7 @@ let suppressNextBroadcast = false;
 
 function getChannelName() {
   const pathname = location.pathname.replace(/\/(presenter|viewer)?\/?(\?.*)?$/, '/');
-  return 'lets-talk-about:' + location.origin + pathname;
+  return `lets-talk-about:${location.origin}${pathname}`;
 }
 
 export function initSync(callback) {

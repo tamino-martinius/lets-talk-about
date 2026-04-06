@@ -25,6 +25,11 @@
     "type": "git",
     "url": "git+https://github.com/tamino-martinius/lets-talk-about.git"
   },
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit"
+  },
   "keywords": [
     "slides",
     "presentation",
@@ -39,5 +44,10 @@
     "markdown-it": "^14.1.1",
     "mermaid": "^11.13.0",
     "vite": "^8.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.10",
+    "@types/node": "^25.5.2",
+    "typescript": "^6.0.2"
   }
 }

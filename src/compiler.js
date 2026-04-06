@@ -1,6 +1,6 @@
 import matter from 'gray-matter';
-import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js';
+import MarkdownIt from 'markdown-it';
 import { builtinTemplates } from './templates.js';
 
 const SLIDE_KEYS = new Set(['type', 'build', 'background', 'cover', 'class', 'template']);
@@ -13,7 +13,10 @@ function extractSlideNotes(segment) {
     if (!inFence && lines[i].trim() === '???') {
       return {
         content: lines.slice(0, i).join('\n'),
-        notes: lines.slice(i + 1).join('\n').trim(),
+        notes: lines
+          .slice(i + 1)
+          .join('\n')
+          .trim(),
       };
     }
   }
@@ -60,16 +63,19 @@ function wrapLines(html, highlights) {
 
     // Reopen tags that were open from previous line
     const prefix = openTags.join('');
-    let line = prefix + lines[i];
+    const line = prefix + lines[i];
 
     // Track open/close spans in this line to know what carries over
-    let match;
     const tagStack = [...openTags];
 
     // Scan the original line (without prefix) for tag changes
     const originalLine = lines[i];
     const scanRegex = /<span[^>]*>|<\/span>/g;
-    while ((match = scanRegex.exec(originalLine)) !== null) {
+    for (
+      let match = scanRegex.exec(originalLine);
+      match !== null;
+      match = scanRegex.exec(originalLine)
+    ) {
       if (match[0] === '</span>') {
         tagStack.pop();
       } else {
@@ -100,7 +106,7 @@ const md = new MarkdownIt({
   },
 });
 
-md.renderer.rules.fence = function (tokens, idx) {
+md.renderer.rules.fence = (tokens, idx) => {
   const token = tokens[idx];
   const { lang, linenums, highlights } = parseFenceInfo(token.info);
 
@@ -232,7 +238,7 @@ function renderSlide(content, options, slideIndex, totalSlides, config, notes) {
 
   const className = classes.filter(Boolean).join(' ');
   const classAttr = className ? ` class="${className}"` : '';
-  const extraAttrs = attrs.length ? ' ' + attrs.join(' ') : '';
+  const extraAttrs = attrs.length ? ` ${attrs.join(' ')}` : '';
 
   // Parse slots from content
   const slots = parseSlots(content);
@@ -301,7 +307,7 @@ export function compile(source, config = {}) {
 
   // Second pass: render slides with templates and layout
   const slides = slideData.map((slide, index) =>
-    renderSlide(slide.content, slide.options, index, totalSlides, config, slide.notes)
+    renderSlide(slide.content, slide.options, index, totalSlides, config, slide.notes),
   );
 
   return { title, slides };
@@ -323,7 +329,7 @@ export function buildHTML(source, config = {}) {
   const merged = { ...themeDefaults, ...(config.theme || {}) };
   const vars = Object.entries(merged)
     .map(([key, value]) => {
-      const cssVar = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
+      const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
       return `  ${cssVar}: ${value};`;
     })
     .join('\n');

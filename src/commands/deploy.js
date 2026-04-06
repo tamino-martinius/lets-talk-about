@@ -1,5 +1,5 @@
-import ghpages from 'gh-pages';
 import { resolve } from 'node:path';
+import ghpages from 'gh-pages';
 
 export async function deploy() {
   const distDir = resolve(process.cwd(), 'dist');

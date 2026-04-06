@@ -1,7 +1,8 @@
 /* Presenter mode — dark theme layout */
 
 /* Override styles.css reset for presenter mode */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -124,7 +125,7 @@ body.presenter-mode {
 }
 
 .presenter-notes-panel:empty::before {
-  content: 'No notes for this slide';
+  content: "No notes for this slide";
   color: #555;
   font-style: italic;
 }
