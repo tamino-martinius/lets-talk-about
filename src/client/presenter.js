@@ -262,12 +262,50 @@ function handleKeyDown(event) {
 
 /* Mermaid rendering */
 
-async function renderMermaid(container) {
+let mermaidModule = null;
+const renderedMermaidElements = new WeakSet();
+
+async function setupMermaidLazyLoading(container) {
   const els = container.querySelectorAll("pre.mermaid");
   if (!els.length) return;
-  const { default: mermaid } = await import("mermaid");
-  mermaid.initialize({ startOnLoad: false, theme: "neutral" });
-  await mermaid.run({ nodes: Array.from(els) });
+
+  // Import mermaid module once if not already loaded
+  if (!mermaidModule) {
+    const { default: mermaid } = await import("mermaid");
+    mermaidModule = mermaid;
+    mermaid.initialize({ startOnLoad: false, theme: "neutral" });
+  }
+
+  // Create IntersectionObserver to render diagrams when they become visible
+  const observer = new IntersectionObserver(
+    async (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting && !renderedMermaidElements.has(entry.target)) {
+          // Mark as rendered before rendering to avoid duplicate renders
+          renderedMermaidElements.add(entry.target);
+
+          try {
+            await mermaidModule.run({ nodes: [entry.target] });
+          } catch (error) {
+            console.error("Failed to render mermaid diagram:", error);
+          }
+
+          // Stop observing this element after successful render
+          observer.unobserve(entry.target);
+        }
+      }
+    },
+    {
+      threshold: 0.1,
+      // Expand root margin to pre-render adjacent slides
+      rootMargin: "100% 0px 100% 0px",
+    },
+  );
+
+  // Observe all mermaid elements
+  for (const el of els) {
+    observer.observe(el);
+  }
 }
 
 /* Initialization */
@@ -425,8 +463,8 @@ function setup() {
   requestState();
 
   // Mermaid
-  renderMermaid(currentSection);
-  renderMermaid(nextSection);
+  setupMermaidLazyLoading(currentSection);
+  setupMermaidLazyLoading(nextSection);
 
   document.body.classList.add("loaded");
 }
