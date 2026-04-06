@@ -199,14 +199,14 @@ img {
 
 /* Code blocks — Vim sunburst theme */
 .slides pre {
-  background-color: #000;
+  background-color: #123;
   border-radius: 8px;
   width: 90%;
-  font-size: calc(3 * var(--vw));
+  font-size: calc(2 * var(--vw));
   margin: 0 auto;
   padding: calc(1 * var(--vw)) calc(2 * var(--vw));
   white-space: pre-wrap;
-  line-height: calc(3.5 * var(--vw));
+  line-height: calc(2.5 * var(--vw));
   color: #fff;
   overflow-x: auto;
 }
@@ -297,7 +297,7 @@ img {
 
 /* Line highlighting */
 .slides pre .code-line.highlight {
-  background-color: color-mix(in srgb, var(--color-theme) 20%, transparent);
+  background-color: color-mix(in srgb, color-mix(in srgb, var(--color-theme) 50%, #fff) 50%, transparent);
   margin: 0 calc(-2 * var(--vw));
   padding: 0 calc(2 * var(--vw));
 }
