@@ -6,9 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
-### Changed
+## [0.5.0] - 2026-04-06
+
+### Fixed
 
 - Fix mermaid loading
+
+### Changed
+
 - Improve code styling
 - Add Biome linting and TypeScript type checking
 - Add CI and npm publish GitHub workflows
@@ -60,7 +65,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - CSS variable theming
 - GitHub Pages deployment via gh-pages
 
-[Unreleased]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.2.0...v0.2.1
