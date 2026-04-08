@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-04-08
+
+### Changed
+
+- Upgrade deploy template with latest GitHub Actions versions
+- Upgrade CI and publish workflow to latest action versions
+- Upgrade dependencies
+
 ## [0.5.0] - 2026-04-06
 
 ### Fixed
@@ -65,7 +73,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - CSS variable theming
 - GitHub Pages deployment via gh-pages
 
-[Unreleased]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/tamino-martinius/lets-talk-about/compare/v0.2.1...v0.3.0
